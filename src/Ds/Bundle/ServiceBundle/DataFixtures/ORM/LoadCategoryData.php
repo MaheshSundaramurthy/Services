@@ -2,11 +2,10 @@
 
 namespace Ds\Bundle\ServiceBundle\DataFixtures\ORM;
 
-use Ds\Bundle\ServiceBundle\Entity\Category;
-use Ds\Bundle\ServiceBundle\Repository\ServiceRepository;
 use Ds\Component\Migration\Fixture\ORM\ResourceFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Ds\Bundle\ServiceBundle\Entity\Category;
 
 /**
  * Class LoadCategoryData
@@ -18,26 +17,19 @@ class LoadCategoryData extends ResourceFixture implements OrderedFixtureInterfac
      */
     public function load(ObjectManager $manager)
     {
-        $fixtures = $this->parse(__DIR__.'/../../Resources/data/{server}/categories.yml');
+        $categories = $this->parse(__DIR__.'/../../Resources/data/{server}/categories.yml');
 
-        foreach ($fixtures as $fixture) {
-            $category = new Category();
-            $category->setUuid($fixture['uuid']);
-            $category->setOwner($fixture['owner']);
-            $category->setOwnerUuid($fixture['ownerUuid']);
-            $category->setTitle($fixture['title']);
-            $category->setDescription($fixture['description']);
-            $category->setPresentation($fixture['presentation']);
-
-            $manager->persist($category);
-            $serviceRepo = $manager->getRepository('DsServiceBundle:Service');
-
-            foreach ($fixture['services'] as $serviceUuid) {
-                $service = $serviceRepo->findOneBy(['uuid' => $serviceUuid]);
-                $category->addService($service);
-            }
-
-            $manager->persist($category);
+        foreach ($categories as $category) {
+            $entity = new Category;
+            $entity
+                ->setUuid($category['uuid'])
+                ->setOwner($category['owner'])
+                ->setOwnerUuid($category['owner_uuid'])
+                ->setTitle($category['title'])
+                ->setDescription($category['description'])
+                ->setPresentation($category['presentation'])
+                ->setEnabled($category['enabled']);
+            $manager->persist($entity);
             $manager->flush();
         }
     }
@@ -47,6 +39,6 @@ class LoadCategoryData extends ResourceFixture implements OrderedFixtureInterfac
      */
     public function getOrder()
     {
-        return 1;
+        return 0;
     }
 }

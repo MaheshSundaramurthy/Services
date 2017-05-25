@@ -2,10 +2,10 @@
 
 namespace Ds\Bundle\ServiceBundle\DataFixtures\ORM;
 
-use Ds\Bundle\ServiceBundle\Entity\Service;
 use Ds\Component\Migration\Fixture\ORM\ResourceFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Ds\Bundle\ServiceBundle\Entity\Service;
 
 /**
  * Class LoadServiceData
@@ -17,17 +17,18 @@ class LoadServiceData extends ResourceFixture implements OrderedFixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        $fixtures = $this->parse(__DIR__.'/../../Resources/data/{server}/services.yml');
+        $services = $this->parse(__DIR__.'/../../Resources/data/{server}/services.yml');
 
-        foreach ($fixtures as $fixture) {
-            $entity = new Service();
-            $entity->setUuid($fixture['uuid']);
-            $entity->setOwner($fixture['owner']);
-            $entity->setOwnerUuid($fixture['ownerUuid']);
-            $entity->setTitle($fixture['title']);
-            $entity->setDescription($fixture['description']);
-            $entity->setPresentation($fixture['presentation']);
-
+        foreach ($services as $service) {
+            $entity = new Service;
+            $entity
+                ->setUuid($service['uuid'])
+                ->setOwner($service['owner'])
+                ->setOwnerUuid($service['owner_uuid'])
+                ->setTitle($service['title'])
+                ->setDescription($service['description'])
+                ->setPresentation($service['presentation'])
+                ->setEnabled($service['enabled']);
             $manager->persist($entity);
             $manager->flush();
         }

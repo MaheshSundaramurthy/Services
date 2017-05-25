@@ -1,19 +1,10 @@
-services:
-    -
-        title:
-            en: Service 1
-        description:
-            en: Description of Service 1
-        presentation:
-            en: Presentation of Service 1
-        uuid: 2D768787-D258-4595-A287-796B7EFDC06D
-        owner: BusinessUnit
-        ownerUuid: 8bca60bb-11ac-420a-bf7b-23c698ab9244
+services: []
 
 prototype:
     uuid: ~
     owner: ~
-    ownerUuid: ~
-    title: ~
-    description: ~
-    presentation: ~
+    owner_uuid: ~
+    title: []
+    description: []
+    presentation: []
+    enabled: ~
