@@ -155,8 +155,8 @@ class Category implements Identifiable, Uuidentifiable, Ownable, Translatable, E
     public function addService(Service $service)
     {
         if (!$this->services->contains($service)) {
-            $service->addCategory($this);
             $this->services->add($service);
+            $service->addCategory($this);
         }
 
         return $this;

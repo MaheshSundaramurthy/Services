@@ -1,0 +1,9 @@
+services: []
+
+prototype:
+    uuid: ~
+    owner: ~
+    ownerUuid: ~
+    title: ~
+    description: ~
+    presentation: ~

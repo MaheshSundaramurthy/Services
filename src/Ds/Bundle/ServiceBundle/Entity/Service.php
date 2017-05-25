@@ -161,8 +161,8 @@ class Service implements Identifiable, Uuidentifiable, Ownable, Translatable, En
     public function addCategory(Category $category)
     {
         if (!$this->categories->contains($category)) {
-            $category->addService($this);
             $this->categories->add($category);
+            $category->addService($this);
         }
 
         return $this;

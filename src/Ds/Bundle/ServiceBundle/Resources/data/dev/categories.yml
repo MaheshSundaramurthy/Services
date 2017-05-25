@@ -1,0 +1,21 @@
+categories:
+    -
+        title:
+            en: Category 1
+        description:
+            en: Description of Category 1
+        presentation:
+            en: Presentation of Category 1
+        services:
+            - 2D768787-D258-4595-A287-796B7EFDC06D
+        uuid: 5C68D6D2-A1DD-4CFF-B326-82506AFFB053
+        owner: BusinessUnit
+        ownerUuid: 8bca60bb-11ac-420a-bf7b-23c698ab9244
+
+prototype:
+    uuid: ~
+    owner: ~
+    ownerUuid: ~
+    title: ~
+    description: ~
+    presentation: ~
