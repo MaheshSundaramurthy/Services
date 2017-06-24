@@ -51,6 +51,13 @@ services:
         tags:
             - { name: api_platform.filter, id: ds_service.filter.submission }
 
+    ds_service.order.submission:
+            parent: api_platform.doctrine.orm.order_filter
+            arguments:
+                - { updatedAt: ~ }
+            tags:
+                - { name: api_platform.filter, id: ds_service.order.submission }
+
     ds_service.form.flow.formio:
         parent: craue.form.flow
         class: Ds\Bundle\ServiceBundle\Form\Flow\FormioFlow
