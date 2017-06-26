@@ -7,6 +7,7 @@ use Ds\Component\Model\Type\Uuidentifiable;
 use Ds\Component\Model\Type\Ownable;
 use Ds\Component\Model\Type\Translatable;
 use Ds\Component\Model\Type\Enableable;
+use Ds\Component\Model\Type\Versionable;
 use Ds\Component\Model\Attribute\Accessor;
 use Knp\DoctrineBehaviors\Model as Behavior;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -24,9 +25,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints as ORMAssert;
  *
  * @ApiResource(
  *     attributes={
- *         "filters"={"ds_service.filter.category"},
- *         "normalization_context"={"groups"={"category_output"}},
- *         "denormalization_context"={"groups"={"category_input"}}
+ *         "filters"={"ds.category.search", "ds.category.date", "ds.category.boolean"},
+ *         "normalization_context"={
+ *             "groups"={"category_output"}
+ *         },
+ *         "denormalization_context"={
+ *             "groups"={"category_input"}
+ *         }
  *     }
  * )
  * @ORM\Entity(repositoryClass="Ds\Bundle\ServiceBundle\Repository\CategoryRepository")
@@ -34,7 +39,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints as ORMAssert;
  * @ORM\HasLifecycleCallbacks
  * @ORMAssert\UniqueEntity(fields="uuid")
  */
-class Category implements Identifiable, Uuidentifiable, Ownable, Translatable, Enableable
+class Category implements Identifiable, Uuidentifiable, Ownable, Translatable, Enableable, Versionable
 {
     use Behavior\Translatable\Translatable;
     use Behavior\Timestampable\Timestampable;
@@ -48,6 +53,7 @@ class Category implements Identifiable, Uuidentifiable, Ownable, Translatable, E
     use Accessor\Description;
     use Accessor\Presentation;
     use Accessor\Enabled;
+    use Accessor\Version;
 
     /**
      * @var integer
@@ -95,6 +101,7 @@ class Category implements Identifiable, Uuidentifiable, Ownable, Translatable, E
      * @Serializer\Groups({"category_output", "category_input"})
      * @ORM\Column(name="`owner`", type="string", length=255, nullable=true)
      * @Assert\NotBlank
+     * @Assert\Length(min=1, max=255)
      */
     protected $owner;
 
@@ -114,6 +121,10 @@ class Category implements Identifiable, Uuidentifiable, Ownable, Translatable, E
      * @Serializer\Groups({"category_output", "category_input"})
      * @Assert\Type("array")
      * @Assert\NotBlank
+     * @Assert\All({
+     *     @Assert\NotBlank,
+     *     @Assert\Length(min=1)
+     * })
      * @Translate
      */
     protected $title;
@@ -124,6 +135,10 @@ class Category implements Identifiable, Uuidentifiable, Ownable, Translatable, E
      * @Serializer\Groups({"category_output", "category_input"})
      * @Assert\Type("array")
      * @Assert\NotBlank
+     * @Assert\All({
+     *     @Assert\NotBlank,
+     *     @Assert\Length(min=1)
+     * })
      * @Translate
      */
     protected $description;
@@ -134,6 +149,10 @@ class Category implements Identifiable, Uuidentifiable, Ownable, Translatable, E
      * @Serializer\Groups({"category_output", "category_input"})
      * @Assert\Type("array")
      * @Assert\NotBlank
+     * @Assert\All({
+     *     @Assert\NotBlank,
+     *     @Assert\Length(min=1)
+     * })
      * @Translate
      */
     protected $presentation;
@@ -193,9 +212,20 @@ class Category implements Identifiable, Uuidentifiable, Ownable, Translatable, E
      * @var string
      * @Serializer\Groups({"category_output", "category_input"})
      * @ORM\Column(name="enabled", type="boolean")
-     * @Assert\NotBlank
+     * @Assert\Type("boolean")
      */
     protected $enabled;
+
+    /**
+     * @var integer
+     * @ApiProperty
+     * @Serializer\Groups({"category_output", "category_input"})
+     * @ORM\Column(name="version", type="integer")
+     * @ORM\Version
+     * @Assert\NotBlank
+     * @Assert\Type("integer")
+     */
+    protected $version;
 
     /**
      * Constructor

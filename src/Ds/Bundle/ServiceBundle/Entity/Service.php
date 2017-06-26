@@ -7,6 +7,7 @@ use Ds\Component\Model\Type\Uuidentifiable;
 use Ds\Component\Model\Type\Ownable;
 use Ds\Component\Model\Type\Translatable;
 use Ds\Component\Model\Type\Enableable;
+use Ds\Component\Model\Type\Versionable;
 use Ds\Component\Model\Attribute\Accessor;
 use Knp\DoctrineBehaviors\Model as Behavior;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -25,9 +26,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints as ORMAssert;
  *
  * @ApiResource(
  *     attributes={
- *         "filters"={"ds_service.filter.service"},
- *         "normalization_context"={"groups"={"service_output"}},
- *         "denormalization_context"={"groups"={"service_input"}}
+ *         "filters"={"ds.service.search", "ds.service.date", "ds.service.boolean"},
+ *         "normalization_context"={
+ *             "groups"={"service_output"}
+ *         },
+ *         "denormalization_context"={
+ *             "groups"={"service_input"}
+ *         }
  *     }
  * )
  * @ORM\Entity(repositoryClass="Ds\Bundle\ServiceBundle\Repository\ServiceRepository")
@@ -35,7 +40,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints as ORMAssert;
  * @ORM\HasLifecycleCallbacks
  * @ORMAssert\UniqueEntity(fields="uuid")
  */
-class Service implements Identifiable, Uuidentifiable, Ownable, Translatable, Enableable
+class Service implements Identifiable, Uuidentifiable, Ownable, Translatable, Enableable, Versionable
 {
     use Behavior\Translatable\Translatable;
     use Behavior\Timestampable\Timestampable;
@@ -49,6 +54,7 @@ class Service implements Identifiable, Uuidentifiable, Ownable, Translatable, En
     use Accessor\Description;
     use Accessor\Presentation;
     use Accessor\Enabled;
+    use Accessor\Version;
 
     /**
      * @var integer
@@ -96,6 +102,7 @@ class Service implements Identifiable, Uuidentifiable, Ownable, Translatable, En
      * @Serializer\Groups({"service_output", "service_input"})
      * @ORM\Column(name="`owner`", type="string", length=255, nullable=true)
      * @Assert\NotBlank
+     * @Assert\Length(min=1, max=255)
      */
     protected $owner;
 
@@ -115,6 +122,10 @@ class Service implements Identifiable, Uuidentifiable, Ownable, Translatable, En
      * @Serializer\Groups({"service_output", "service_input"})
      * @Assert\Type("array")
      * @Assert\NotBlank
+     * @Assert\All({
+     *     @Assert\NotBlank,
+     *     @Assert\Length(min=1)
+     * })
      * @Translate
      */
     protected $title;
@@ -125,6 +136,10 @@ class Service implements Identifiable, Uuidentifiable, Ownable, Translatable, En
      * @Serializer\Groups({"service_output", "service_input"})
      * @Assert\Type("array")
      * @Assert\NotBlank
+     * @Assert\All({
+     *     @Assert\NotBlank,
+     *     @Assert\Length(min=1)
+     * })
      * @Translate
      */
     protected $description;
@@ -135,6 +150,10 @@ class Service implements Identifiable, Uuidentifiable, Ownable, Translatable, En
      * @Serializer\Groups({"service_output", "service_input"})
      * @Assert\Type("array")
      * @Assert\NotBlank
+     * @Assert\All({
+     *     @Assert\NotBlank,
+     *     @Assert\Length(min=1)
+     * })
      * @Translate
      */
     protected $presentation;
@@ -250,9 +269,20 @@ class Service implements Identifiable, Uuidentifiable, Ownable, Translatable, En
      * @ApiProperty
      * @Serializer\Groups({"service_output", "service_input"})
      * @ORM\Column(name="enabled", type="boolean")
-     * @Assert\NotBlank
+     * @Assert\Type("boolean")
      */
     protected $enabled;
+
+    /**
+     * @var integer
+     * @ApiProperty
+     * @Serializer\Groups({"service_output", "service_input"})
+     * @ORM\Column(name="version", type="integer")
+     * @ORM\Version
+     * @Assert\NotBlank
+     * @Assert\Type("integer")
+     */
+    protected $version;
 
     /**
      * @var string

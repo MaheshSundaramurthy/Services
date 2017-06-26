@@ -6,6 +6,7 @@ use Ds\Component\Model\Type\Identifiable;
 use Ds\Component\Model\Type\Uuidentifiable;
 use Ds\Component\Model\Type\Ownable;
 use Ds\Component\Model\Type\Identitiable;
+use Ds\Component\Model\Type\Versionable;
 use Ds\Component\Model\Attribute\Accessor;
 use Ds\Bundle\ServiceBundle\Attribute\Accessor as ServiceAccessor;
 use Knp\DoctrineBehaviors\Model as Behavior;
@@ -23,9 +24,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints as ORMAssert;
  *
  * @ApiResource(
  *     attributes={
- *         "filters"={"ds_service.filter.submission", "ds_service.order.submission"},
- *         "normalization_context"={"groups"={"submission_output"}},
- *         "denormalization_context"={"groups"={"submission_input"}}
+ *         "filters"={"ds.submission.search", "ds.submission.date", "ds.submission.boolean"},
+ *         "normalization_context"={
+ *             "groups"={"submission_output"}
+ *         },
+ *         "denormalization_context"={
+ *             "groups"={"submission_input"}
+ *         }
  *     }
  * )
  * @ORM\Entity(repositoryClass="Ds\Bundle\ServiceBundle\Repository\SubmissionRepository")
@@ -33,7 +38,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints as ORMAssert;
  * @ORM\HasLifecycleCallbacks
  * @ORMAssert\UniqueEntity(fields="uuid")
  */
-class Submission implements Identifiable, Uuidentifiable, Ownable, Identitiable
+class Submission implements Identifiable, Uuidentifiable, Ownable, Identitiable, Versionable
 {
     use Behavior\Timestampable\Timestampable;
     use Behavior\SoftDeletable\SoftDeletable;
@@ -46,6 +51,7 @@ class Submission implements Identifiable, Uuidentifiable, Ownable, Identitiable
     use Accessor\IdentityUuid;
     use Accessor\Data;
     use Accessor\State;
+    use Accessor\Version;
     use ServiceAccessor\Scenario;
 
     /**
@@ -141,17 +147,28 @@ class Submission implements Identifiable, Uuidentifiable, Ownable, Identitiable
      * @var array
      * @Serializer\Groups({"submission_output", "submission_input"})
      * @ORM\Column(name="data", type="json_array")
+     * @Assert\Type("array")
      */
     protected $data;
 
     /**
      * @var integer
      * @ApiProperty
-     * @Serializer\Groups({"submission_output"})
+     * @Serializer\Groups({"submission_output", "submission_input"})
      * @ORM\Column(name="state", type="smallint", options={"unsigned"=true})
-     * @Assert\NotBlank
      */
     protected $state;
+
+    /**
+     * @var integer
+     * @ApiProperty
+     * @Serializer\Groups({"submission_output", "submission_input"})
+     * @ORM\Column(name="version", type="integer")
+     * @ORM\Version
+     * @Assert\NotBlank
+     * @Assert\Type("integer")
+     */
+    protected $version;
 
     /**
      * Constructor
