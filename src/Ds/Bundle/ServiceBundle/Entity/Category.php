@@ -25,7 +25,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints as ORMAssert;
  *
  * @ApiResource(
  *     attributes={
- *         "filters"={"ds.category.search", "ds.category.date", "ds.category.boolean"},
+ *         "filters"={"ds.category.search", "ds.category.search_translation", "ds.category.date", "ds.category.boolean", "ds.category.order", "ds.category.order_translation"},
  *         "normalization_context"={
  *             "groups"={"category_output"}
  *         },
@@ -49,10 +49,11 @@ class Category implements Identifiable, Uuidentifiable, Ownable, Translatable, E
     use Accessor\Uuid;
     use Accessor\Owner;
     use Accessor\OwnerUuid;
-    use Accessor\Title;
-    use Accessor\Description;
-    use Accessor\Presentation;
+    use Accessor\Translation\Title;
+    use Accessor\Translation\Description;
+    use Accessor\Translation\Presentation;
     use Accessor\Enabled;
+    use Accessor\Weight;
     use Accessor\Version;
 
     /**
@@ -215,6 +216,16 @@ class Category implements Identifiable, Uuidentifiable, Ownable, Translatable, E
      * @Assert\Type("boolean")
      */
     protected $enabled;
+
+    /**
+     * @var integer
+     * @ApiProperty
+     * @Serializer\Groups({"category_output", "category_input"})
+     * @ORM\Column(name="weight", type="smallint")
+     * @Assert\NotBlank
+     * @Assert\Length(min=0, max=255)
+     */
+    protected $weight;
 
     /**
      * @var integer

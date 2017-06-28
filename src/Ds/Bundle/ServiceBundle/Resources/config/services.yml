@@ -18,12 +18,16 @@ services:
             - '@ds_bpm.api.factory'
             - '@ds_formio.api'
             - '@ds_config.service.config'
+            - Ds\Bundle\ServiceBundle\Entity\Scenario
 
     ds_service.service.submission:
         class: Ds\Bundle\ServiceBundle\Service\SubmissionService
         arguments:
             - '@doctrine.orm.entity_manager'
             - Ds\Bundle\ServiceBundle\Entity\Submission
+            - '@ds_service.service.scenario'
+            - '@ds_formio.api'
+            - '@ds_config.service.config'
 
     ds_service.filter.category.search:
         parent: api_platform.doctrine.orm.search_filter
@@ -33,8 +37,19 @@ services:
                 uuid: exact
                 owner: exact
                 ownerUuid: exact
+                services.uuid: exact
         tags:
             - { name: api_platform.filter, id: ds.category.search }
+
+    ds_service.filter.category.search_translation:
+        parent: ds_translation.doctrine.orm.filter.search
+        arguments:
+            -
+                title: partial
+                description: partial
+                presentation: partial
+        tags:
+            - { name: api_platform.filter, id: ds.category.search_translation }
 
     ds_service.filter.category.date:
         parent: api_platform.doctrine.orm.date_filter
@@ -54,6 +69,27 @@ services:
         tags:
             - { name: api_platform.filter, id: ds.category.boolean }
 
+    ds_service.filter.category.order:
+        parent: api_platform.doctrine.orm.order_filter
+        arguments:
+            -
+                id: ~
+                createdAt: ~
+                updatedAt: ~
+                deletedAt: ~
+                owner: ~
+                weight: ~
+        tags:
+            - { name: api_platform.filter, id: ds.category.order }
+
+    ds_service.filter.category.order_translation:
+        parent: ds_translation.doctrine.orm.filter.order
+        arguments:
+            -
+                title: ~
+        tags:
+            - { name: api_platform.filter, id: ds.category.order_translation }
+
     ds_service.filter.service.search:
         parent: api_platform.doctrine.orm.search_filter
         arguments:
@@ -62,8 +98,19 @@ services:
                 uuid: exact
                 owner: exact
                 ownerUuid: exact
+                categories.uuid: exact
         tags:
             - { name: api_platform.filter, id: ds.service.search }
+
+    ds_service.filter.service.search_translation:
+        parent: ds_translation.doctrine.orm.filter.search
+        arguments:
+            -
+                title: partial
+                description: partial
+                presentation: partial
+        tags:
+            - { name: api_platform.filter, id: ds.service.search_translation }
 
     ds_service.filter.service.date:
         parent: api_platform.doctrine.orm.date_filter
@@ -83,6 +130,27 @@ services:
         tags:
             - { name: api_platform.filter, id: ds.service.boolean }
 
+    ds_service.filter.service.order:
+        parent: api_platform.doctrine.orm.order_filter
+        arguments:
+            -
+                id: ~
+                createdAt: ~
+                updatedAt: ~
+                deletedAt: ~
+                owner: ~
+                weight: ~
+        tags:
+            - { name: api_platform.filter, id: ds.service.order }
+
+    ds_service.filter.service.order_translation:
+        parent: ds_translation.doctrine.orm.filter.order
+        arguments:
+            -
+                title: ~
+        tags:
+            - { name: api_platform.filter, id: ds.service.order_translation }
+
     ds_service.filter.scenario.search:
         parent: api_platform.doctrine.orm.search_filter
         arguments:
@@ -95,6 +163,16 @@ services:
                 service.uuid: exact
         tags:
             - { name: api_platform.filter, id: ds.scenario.search }
+
+    ds_service.filter.scenario.search_translation:
+        parent: ds_translation.doctrine.orm.filter.search
+        arguments:
+            -
+                title: partial
+                description: partial
+                presentation: partial
+        tags:
+            - { name: api_platform.filter, id: ds.scenario.search_translation }
 
     ds_service.filter.scenario.date:
         parent: api_platform.doctrine.orm.date_filter
@@ -114,6 +192,28 @@ services:
         tags:
             - { name: api_platform.filter, id: ds.scenario.boolean }
 
+    ds_service.filter.scenario.order:
+        parent: api_platform.doctrine.orm.order_filter
+        arguments:
+            -
+                id: ~
+                createdAt: ~
+                updatedAt: ~
+                deletedAt: ~
+                owner: ~
+                type: ~
+                weight: ~
+        tags:
+            - { name: api_platform.filter, id: ds.scenario.order }
+
+    ds_service.filter.scenario.order_translation:
+        parent: ds_translation.doctrine.orm.filter.order
+        arguments:
+            -
+                title: ~
+        tags:
+            - { name: api_platform.filter, id: ds.scenario.order_translation }
+
     ds_service.filter.submission.search:
         parent: api_platform.doctrine.orm.search_filter
         arguments:
@@ -125,6 +225,7 @@ services:
                 identity: exact
                 identityUuid: exact
                 state: exact
+                scenario.uuid: exact
         tags:
             - { name: api_platform.filter, id: ds.submission.search }
 
@@ -146,12 +247,20 @@ services:
         tags:
             - { name: api_platform.filter, id: ds.submission.boolean }
 
-    ds_service.order.submission:
-            parent: api_platform.doctrine.orm.order_filter
-            arguments:
-                - { updatedAt: ~ }
-            tags:
-                - { name: api_platform.filter, id: ds_service.order.submission }
+    ds_service.filter.submission.order:
+        parent: api_platform.doctrine.orm.order_filter
+        arguments:
+            -
+                id: ~
+                createdAt: ~
+                updatedAt: ~
+                deletedAt: ~
+                owner: ~
+                identity: ~
+                state: ~
+                weight: ~
+        tags:
+            - { name: api_platform.filter, id: ds.submission.order }
 
     ds_service.form.flow.formio:
         parent: craue.form.flow
@@ -162,13 +271,10 @@ services:
         arguments:
             - '@ds_service.form.flow.formio'
 
-    ds_service.event_listener.submission.validation.formio:
-        class: Ds\Bundle\ServiceBundle\EventListener\Submission\Validation\FormioListener
+    ds_service.event_listener.submission.validation:
+        class: Ds\Bundle\ServiceBundle\EventListener\Submission\Validation\DataListener
         arguments:
-            - '@service_container'
-            - '@ds_formio.api'
-            - '@ds_config.service.config'
-            - '@api_platform.hydra.normalizer.constraint_violation_list'
+            - '@ds_service.service.submission'
         tags:
             - { name: kernel.event_listener, event: kernel.view, method: kernelView, priority: 64 }
 
@@ -195,3 +301,10 @@ services:
             - '@ds_service.service.scenario'
             - '@request_stack'
             - "%locale%"
+
+    Ds\Bundle\ServiceBundle\Action\Scenario\SubmissionsAction:
+        class: Ds\Bundle\ServiceBundle\Action\Scenario\SubmissionsAction
+        arguments:
+            - '@request_stack'
+            - '@ds_service.service.scenario'
+            - '@ds_service.service.submission'

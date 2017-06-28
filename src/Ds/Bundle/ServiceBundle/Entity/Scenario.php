@@ -26,7 +26,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints as ORMAssert;
  *
  * @ApiResource(
  *     attributes={
- *         "filters"={"ds.scenario.search", "ds.scenario.date", "ds.scenario.boolean"},
+ *         "filters"={"ds.scenario.search", "ds.scenario.search_translation", "ds.scenario.date", "ds.scenario.boolean", "ds.scenario.order", "ds.scenario.order_translation"},
  *         "normalization_context"={
  *             "groups"={"scenario_output"}
  *         },
@@ -51,9 +51,9 @@ class Scenario implements Identifiable, Uuidentifiable, Ownable, Translatable, E
     use Accessor\Owner;
     use Accessor\OwnerUuid;
     use Accessor\Type;
-    use Accessor\Title;
-    use Accessor\Description;
-    use Accessor\Presentation;
+    use Accessor\Translation\Title;
+    use Accessor\Translation\Description;
+    use Accessor\Translation\Presentation;
     use Accessor\Data;
     use Accessor\Enabled;
     use Accessor\Weight;

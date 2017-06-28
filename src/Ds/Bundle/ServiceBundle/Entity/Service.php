@@ -26,7 +26,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints as ORMAssert;
  *
  * @ApiResource(
  *     attributes={
- *         "filters"={"ds.service.search", "ds.service.date", "ds.service.boolean"},
+ *         "filters"={"ds.service.search", "ds.service.search_translation", "ds.service.date", "ds.service.boolean", "ds.service.order", "ds.service.order_translation"},
  *         "normalization_context"={
  *             "groups"={"service_output"}
  *         },
@@ -50,10 +50,11 @@ class Service implements Identifiable, Uuidentifiable, Ownable, Translatable, En
     use Accessor\Uuid;
     use Accessor\Owner;
     use Accessor\OwnerUuid;
-    use Accessor\Title;
-    use Accessor\Description;
-    use Accessor\Presentation;
+    use Accessor\Translation\Title;
+    use Accessor\Translation\Description;
+    use Accessor\Translation\Presentation;
     use Accessor\Enabled;
+    use Accessor\Weight;
     use Accessor\Version;
 
     /**
@@ -272,6 +273,16 @@ class Service implements Identifiable, Uuidentifiable, Ownable, Translatable, En
      * @Assert\Type("boolean")
      */
     protected $enabled;
+
+    /**
+     * @var integer
+     * @ApiProperty
+     * @Serializer\Groups({"service_output", "service_input"})
+     * @ORM\Column(name="weight", type="smallint")
+     * @Assert\NotBlank
+     * @Assert\Length(min=0, max=255)
+     */
+    protected $weight;
 
     /**
      * @var integer
